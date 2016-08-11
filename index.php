@@ -16,20 +16,17 @@ input{
 }
 </style>
 <div id="msg">[status messages to appear here]</div>
-<table>
+<table id="question-table">
 <?php
 require_once 'db.php';
 
 $data = DB::query('SELECT * from nsbdata'); //all htmlentities()'d before insertion
-$cols = array();
+$cols = DB::columnList('nsbdata');
+array_shift($cols);
 
 echo "<tr><th>Q</th>";
-foreach($data[0] as $col => $row){
-  if($col == 'ID')
-    continue;
-  $cols[] = $col;
+foreach($cols as $col)
   echo "<th>".$col."</th>";
-}
 echo "</tr>";
 
 foreach($data as $index => $row){
@@ -55,6 +52,6 @@ $rowtemplate .= "</tr>";
 <script>
   var rows = <?=count($data)?>;
   var cols = ['<?=implode("','",$cols)?>'];
-  var rowtemplate = "<?=rowtemplate?>";
+  var rowtemplate = "<?=$rowtemplate?>";
 </script>
 <script src="script.js"></script>

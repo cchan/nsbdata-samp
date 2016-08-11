@@ -1,9 +1,10 @@
 <?php
 require_once 'db.php';
 
-  var_dump($_POST);
-if($_POST['row'] && $_POST['col'] && $_POST['val']){
-  DB::insertUpdate(array(
+if(array_key_exists('row',$_POST)
+    && array_key_exists('col',$_POST)
+    && array_key_exists('val',$_POST)){
+  DB::insertUpdate('nsbdata', array(
     'ID' => intval($_POST['row']),
     htmlentities($_POST['col']) => htmlentities($_POST['val'])
   ));
