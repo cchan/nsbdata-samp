@@ -1,6 +1,7 @@
 <?php
 require_once 'db.php';
 
+  var_dump($_POST);
 if($_POST['row'] && $_POST['col'] && $_POST['val']){
   DB::insertUpdate(array(
     'ID' => intval($_POST['row']),
