@@ -22,8 +22,8 @@
 var queue = [];
 
 function msg(connotation, str){
-  $('#msg').text(str);
-  $('#msg').css('color',connotation<0?'red':connotation>0?'green':'#cc0');
+  $('#msg').html(str);
+  $('#msg').css('color',connotation<0 ? 'red' : connotation>0 ? 'green' : '#cc0');
 }
 
 function update(){

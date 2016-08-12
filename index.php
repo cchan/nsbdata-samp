@@ -23,6 +23,7 @@ require_once 'db.php';
 $data = DB::query('SELECT * from nsbdata'); //all htmlentities()'d before insertion
 $cols = DB::columnList('nsbdata');
 array_shift($cols);
+$cols = array_map('htmlentities', $cols);
 
 echo "<tr><th>Q</th>";
 foreach($cols as $col)
