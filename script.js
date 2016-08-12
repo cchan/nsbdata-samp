@@ -26,30 +26,52 @@ function msg(connotation, str){
   $('#msg').css('color',connotation<0 ? 'red' : connotation>0 ? 'green' : '#cc0');
 }
 
+
+var UNSAVED = false;
+
+$(window).on("beforeunload", function(e){
+  if(UNSAVED){
+    var text = "You have unsaved changes. Are you sure?";
+    e.returnValue = text;
+    return text;
+  }
+});
+
+
+function failHandler(res){
+  console.error(res);
+  msg(-1, 'Failed. Do not reload the page. You can continue editing. Trying again in <span id="countdown">5</span>s...');
+  for(var i = 1; i <= 4; i++)
+    (function(i){ //capture the value of i - could use let, but browsers
+      setTimeout(function(){$('#countdown').text(5-i);}, 1000 * i);
+    })(i);
+  setTimeout(update, 5000);
+}
+
 function update(){
   if(queue.length == 0){
     msg(1, 'Saved');
+    UNSAVED = false;
     setTimeout(update, 1000);
     return;
   }
   
-  msg(0, 'Saving...');
+  UNSAVED = true;
+  
+  msg(0, 'Saving (queued ' + queue.length + ')...');
+  
   $.post({
     url: 'process.php',
     data: queue[0]
-  }).done(function(res){
-    console.log(res);
-    queue.shift();
-    update(); //no call stack problems because async! yay
-  }).fail(function(res){
-    console.log(res);
-    msg(-1, 'Failed. Do not reload the page. Trying again in <span id="countdown">5</span>s...');
-    for(var i = 1; i <= 4; i++)
-      (function(i){ //capture the value of i
-        setTimeout(function(){$('#countdown').text(5-i);}, 1000 * i);
-      })(i);
-    setTimeout(update, 5000);
-  });
+  }).done(function(res, textStatus, jqXHR){
+    if(res != 'success' || textStatus != 'success'){
+      failHandler(res); // "return a rejected promise" to go to the fail handler??? sigh this is inelegant
+    }else{
+      console.log(res);
+      queue.shift();
+      update(); //no call stack problems because async! yay
+    }
+  }).fail(failHandler); //apparently this will not be called on internal server error. Smh.
 }
 
 function setHandlers(){
